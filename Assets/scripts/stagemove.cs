@@ -23,21 +23,29 @@ public class stagemove : MonoBehaviour
         moveInput = InputSystem.actions.FindAction("Move");
     }
 
+    public float threshold = 0.2f;
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(moveInput.ReadValue<Vector2>());
+        //Debug.Log(moveInput.ReadValue<Vector2>());
         Vector3 rotation;
-        float threshold = 0.2f;
 
+        rotation = new Vector3(
+        moveInput.ReadValue<Vector2>().y * threshold,
+        0,
+        moveInput.ReadValue<Vector2>().x * threshold);
 
 
         //A += B → A = A + B
         //this,transform.localPosition → このコードがアタッチされているオブジェクトの位置情報
         //moveInout.ReadValue<Vecter2> →(X,Y,Z=0)
         
-        rotation = new Vector3(moveInput.ReadValue<Vector2>().y * threshold, 0, moveInput.ReadValue<Vector2>().x * threshold);
+        rotation = new Vector3(moveInput.ReadValue<Vector2>().y, 0, moveInput.ReadValue<Vector2>().x);
 
-        this.transform.Rotate(rotation);
+        //this.transform.Rotate(rotation);
+        //オイラー角に変換
+        Quaternion tilt = Quaternion.Euler(rotation.x,  rotation.z, 0f);
+        this.gameObject.GetComponent<Rigidbody>().MoveRotation(this.gameObject.GetComponent<Rigidbody>().transform.rotation * tilt);
+
     }
 }
